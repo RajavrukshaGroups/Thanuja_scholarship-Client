@@ -1,0 +1,3 @@
+.top-class {
+  top: calc(var(--spacing) * 28);
+}

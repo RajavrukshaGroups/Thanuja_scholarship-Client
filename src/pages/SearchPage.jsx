@@ -1,8 +1,11 @@
 import { Search } from "lucide-react";
 import { motion } from "motion/react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
+import debounce from "lodash.debounce";
 import FiltersSidebar from "../components/FiltersSidebar";
 import api from "../utils/api";
+import Spinner from "../components/Spinner";
+import "./searchPage.css";
 
 export const SearchPage = () => {
   const [scholarships, setScholarships] = useState([]);
@@ -16,8 +19,36 @@ export const SearchPage = () => {
   const [selectedTypes, setSelectedTypes] = useState([]);
   const [selectedSponsors, setSelectedSponsors] = useState([]);
 
+  const [filterStats, setFilterStats] = useState({
+    fields: [],
+    types: [],
+  });
+
   const [searchTerm, setSearchTerm] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+
+  const [loading, setLoading] = useState(false);
+  const [loadingMore, setLoadingMore] = useState(false);
+
+  /* ===============================
+     DEBOUNCED SEARCH
+  =============================== */
+
+  const debouncedSearchHandler = useMemo(
+    () =>
+      debounce((value) => {
+        setDebouncedSearch(value);
+        setPage(1);
+      }, 500),
+    [],
+  );
+
+  useEffect(() => {
+    return () => debouncedSearchHandler.cancel();
+  }, [debouncedSearchHandler]);
 
   /* ===============================
      FETCH FILTER OPTIONS
@@ -26,15 +57,18 @@ export const SearchPage = () => {
   useEffect(() => {
     const fetchFilters = async () => {
       try {
-        const [fieldsRes, typesRes, sponsorsRes] = await Promise.all([
+        const [fieldsRes, typesRes, sponsorsRes, statsRes] = await Promise.all([
           api.get("/scholar/dropdown/fields"),
           api.get("/scholar/dropdown/types"),
           api.get("/scholar/dropdown/sponsors"),
+          api.get("/scholar/filter-stats"),
         ]);
 
         setFields(fieldsRes.data.data);
         setTypes(typesRes.data.data);
         setSponsors(sponsorsRes.data.data);
+
+        setFilterStats(statsRes.data);
       } catch (err) {
         console.error(err);
       }
@@ -48,16 +82,29 @@ export const SearchPage = () => {
   =============================== */
 
   useEffect(() => {
-    fetchScholarships();
-  }, [selectedFields, selectedDegrees, selectedTypes, selectedSponsors]);
+    setPage(1);
+    fetchScholarships(1, true);
+  }, [
+    selectedFields,
+    selectedDegrees,
+    selectedTypes,
+    selectedSponsors,
+    debouncedSearch,
+  ]);
 
-  const fetchScholarships = async () => {
+  const fetchScholarships = async (pageNumber = page, reset = false) => {
     try {
-      setLoading(true);
+      if (reset) {
+        setLoading(true);
+      } else {
+        setLoadingMore(true);
+      }
 
       const params = new URLSearchParams();
 
-      if (searchTerm) params.append("search", searchTerm);
+      params.append("page", pageNumber);
+
+      if (debouncedSearch) params.append("search", debouncedSearch);
 
       if (selectedFields.length)
         params.append("fields", selectedFields.join(","));
@@ -72,16 +119,33 @@ export const SearchPage = () => {
 
       const res = await api.get(`/scholar/scholarships?${params.toString()}`);
 
-      setScholarships(res.data.data);
+      if (reset) {
+        setScholarships(res.data.data);
+      } else {
+        setScholarships((prev) => [...prev, ...res.data.data]);
+      }
+
+      setTotalPages(res.data.totalPages);
     } catch (err) {
       console.error(err);
     } finally {
       setLoading(false);
+      setLoadingMore(false);
     }
   };
 
   /* ===============================
-     CLEAR ALL FILTERS
+     LOAD MORE
+  =============================== */
+
+  const loadMore = () => {
+    const nextPage = page + 1;
+    setPage(nextPage);
+    fetchScholarships(nextPage);
+  };
+
+  /* ===============================
+     CLEAR FILTERS
   =============================== */
 
   const clearAll = () => {
@@ -89,12 +153,12 @@ export const SearchPage = () => {
     setSelectedDegrees([]);
     setSelectedTypes([]);
     setSelectedSponsors([]);
+    setPage(1);
   };
 
   return (
     <div className="pt-32 pb-20 min-h-screen bg-edufin-bg">
       <div className="max-w-7xl mx-auto px-6">
-        {/* PAGE TITLE */}
         <div className="mb-12">
           <h1 className="text-3xl font-bold text-edufin-deep mb-4">
             Find Your Scholarship
@@ -103,11 +167,13 @@ export const SearchPage = () => {
 
         <div className="grid lg:grid-cols-4 gap-8">
           {/* FILTER SIDEBAR */}
+
           <div className="lg:col-span-1">
             <FiltersSidebar
               fields={fields}
               types={types}
               sponsors={sponsors}
+              filterStats={filterStats}
               selectedFields={selectedFields}
               selectedDegrees={selectedDegrees}
               selectedTypes={selectedTypes}
@@ -120,37 +186,33 @@ export const SearchPage = () => {
             />
           </div>
 
-          {/* RESULTS SECTION */}
+          {/* RESULTS */}
+
           <div className="lg:col-span-3">
             {/* SEARCH BAR */}
-            <div className="sticky top-32 z-30 bg-edufin-bg py-4">
-              <div className="bg-white p-4 rounded-2xl shadow-md border flex gap-4">
-                <div className="flex-1 flex items-center px-4">
-                  <Search className="text-slate-400 mr-3" size={20} />
-                  <input
-                    type="text"
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    placeholder="Search scholarships..."
-                    className="w-full py-2 focus:outline-none"
-                  />
-                </div>
 
-                <button
-                  onClick={fetchScholarships}
-                  className="bg-edufin-deep text-white px-6 py-2.5 rounded-xl font-bold"
-                >
-                  Search
-                </button>
+            <div className="sticky z-30 bg-edufin-bg py-4 top-class">
+              <div className="bg-white p-4 rounded-2xl shadow-md border flex items-center">
+                <Search className="text-slate-400 mr-3" size={20} />
+
+                <input
+                  type="text"
+                  value={searchTerm}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setSearchTerm(value);
+                    debouncedSearchHandler(value);
+                  }}
+                  placeholder="Search scholarships..."
+                  className="w-full py-2 focus:outline-none"
+                />
               </div>
             </div>
 
             {/* RESULTS */}
 
             {loading ? (
-              <p>Loading scholarships...</p>
-            ) : scholarships.length === 0 ? (
-              <p>No scholarships found.</p>
+              <Spinner />
             ) : (
               <div className="grid gap-6">
                 {scholarships.map((scholarship, i) => (
@@ -174,6 +236,23 @@ export const SearchPage = () => {
                     </button>
                   </motion.div>
                 ))}
+              </div>
+            )}
+
+            {/* LOAD MORE */}
+
+            {page < totalPages && (
+              <div className="flex justify-center mt-10">
+                {loadingMore ? (
+                  <Spinner />
+                ) : (
+                  <button
+                    onClick={loadMore}
+                    className="bg-edufin-deep text-white px-6 py-3 rounded-xl font-bold"
+                  >
+                    Load More
+                  </button>
+                )}
               </div>
             )}
           </div>
