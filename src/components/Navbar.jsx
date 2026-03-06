@@ -1,8 +1,7 @@
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X } from 'lucide-react';
-import { Link, useLocation } from 'react-router-dom';
-
+import { useState, useEffect } from "react";
+import { motion, AnimatePresence } from "motion/react";
+import { Menu, X } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
@@ -11,21 +10,23 @@ export const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
   const navItems = [
-    { name: 'Home', path: '/' },
-    { name: 'Scholarships', path: '/search' },
-    { name: 'Scholorship Details', path: '/#premium' },
-    { name: 'Dashboard', path: '/dashboard' },
+    { name: "Home", path: "/" },
+    { name: "Scholarships", path: "/search" },
+    { name: "Scholorship Details", path: "/#premium" },
+    { name: "Dashboard", path: "/dashboard" },
   ];
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-white/90 backdrop-blur-md py-3 shadow-sm' : 'bg-transparent py-5'}`}>
+    <nav
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-white/90 backdrop-blur-md py-3 shadow-sm" : "bg-transparent py-5"}`}
+    >
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
-      {/* <Link to="/" className="flex items-center gap-3">
+        {/* <Link to="/" className="flex items-center gap-3">
       <img 
         src="/assets/edufin-logo.png" 
         alt="Edufin Logo" 
@@ -42,40 +43,43 @@ export const Navbar = () => {
         </span>
       </div>
     </Link> */}
-    
-          <Link to="/" className="flex justify-center  flex-col items-center  ml-12 ">
-            <img
-              src="/assets/edufin-logo.png"
-              alt="Edufin Logo"
-              className="h-14 w-auto "
-            />
-              <br />
-            <div className="flex flex-col leading-none text-center -mt-6">
-              <span
-                className="text-edufin-deep  text-xl tracking-tight"
-                style={{ fontFamily: "'Playfair Display', serif" }}
-              >
-                E d u f i n
-              </span>
 
-              <span
-                className="text-[8px] text-edufin-gold uppercase -mt-1"
-                style={{
-                  fontFamily: "'Montserrat', sans-serif",
-                  letterSpacing: '0.3em',
-                }}
-              >
-                Scholarships
-              </span>
-            </div>
-          </Link>
-        
+        <Link
+          to="/"
+          className="flex justify-center  flex-col items-center  ml-12 "
+        >
+          <img
+            src="/assets/edufin-logo.png"
+            alt="Edufin Logo"
+            className="h-14 w-auto "
+          />
+          <br />
+          <div className="flex flex-col leading-none text-center -mt-6">
+            <span
+              className="text-edufin-deep  text-xl tracking-tight"
+              style={{ fontFamily: "'Playfair Display', serif" }}
+            >
+              E d u f i n
+            </span>
+
+            <span
+              className="text-[8px] text-edufin-gold uppercase -mt-1"
+              style={{
+                fontFamily: "'Montserrat', sans-serif",
+                letterSpacing: "0.3em",
+              }}
+            >
+              Scholarships
+            </span>
+          </div>
+        </Link>
+
         <div className="hidden md:flex items-center gap-8">
           {navItems.map((item) => (
-            <Link 
-              key={item.name} 
-              to={item.path} 
-              className={`font-medium transition-colors ${location.pathname === item.path ? 'text-edufin-royal' : 'text-slate-600 hover:text-edufin-royal'}`}
+            <Link
+              key={item.name}
+              to={item.path}
+              className={`font-medium transition-colors ${location.pathname === item.path ? "text-edufin-royal" : "text-slate-600 hover:text-edufin-royal"}`}
             >
               {item.name}
             </Link>
@@ -85,7 +89,10 @@ export const Navbar = () => {
           </button>
         </div>
 
-        <button className="md:hidden text-edufin-deep" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+        <button
+          className="md:hidden text-edufin-deep"
+          onClick={() => setIsMenuOpen(!isMenuOpen)}
+        >
           {isMenuOpen ? <X /> : <Menu />}
         </button>
       </div>
@@ -93,17 +100,17 @@ export const Navbar = () => {
       {/* Mobile Menu */}
       <AnimatePresence>
         {isMenuOpen && (
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             className="absolute top-full left-0 right-0 bg-white border-t border-slate-100 p-6 flex flex-col gap-4 shadow-xl md:hidden"
           >
             {navItems.map((item) => (
-              <Link 
-                key={item.name} 
-                to={item.path} 
-                className="text-slate-600 font-medium py-2" 
+              <Link
+                key={item.name}
+                to={item.path}
+                className="text-slate-600 font-medium py-2"
                 onClick={() => setIsMenuOpen(false)}
               >
                 {item.name}
@@ -118,7 +125,6 @@ export const Navbar = () => {
     </nav>
   );
 };
-
 
 // import { useState, useEffect } from 'react';
 // import { motion, AnimatePresence } from 'motion/react';
