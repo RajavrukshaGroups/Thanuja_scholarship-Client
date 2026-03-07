@@ -34,3 +34,7 @@
 .animate-pulse-gold {
   animation: pulse-gold 2s infinite;
 }
+
+html {
+  font-size: 17px;
+}
