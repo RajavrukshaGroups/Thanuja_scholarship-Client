@@ -1,26 +1,36 @@
 import { Search } from "lucide-react";
-import { motion } from "motion/react";
 import { useEffect, useState, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import debounce from "lodash.debounce";
 import FiltersSidebar from "../components/FiltersSidebar";
 import api from "../utils/api";
 import Spinner from "../components/Spinner";
-import {
-  FiChevronRight,
-  FiAward,
-  FiCalendar,
-  FiMapPin,
-  FiTrendingUp,
-  FiFilter,
-} from "react-icons/fi";
-import { MdOutlineSchool, MdOutlineEmojiEvents } from "react-icons/md";
-import { FaUniversity, FaRegClock } from "react-icons/fa";
+import { FiChevronRight, FiCalendar, FiTrendingUp } from "react-icons/fi";
+import { MdOutlineEmojiEvents } from "react-icons/md";
+import { FaUniversity } from "react-icons/fa";
 import { GiGraduateCap } from "react-icons/gi";
 import "./searchPage.css";
 import ScholarshipDetailsModal from "../components/ScholarshipDetailsModal";
 import MemberPlans from "../components/MemberPlans";
+import { toast } from "sonner";
+import { motion } from "motion/react";
+
+import { useDispatch, useSelector } from "react-redux";
+import {
+  setSelectedPlan,
+  addScholarship,
+  removeScholarship,
+} from "../../store/applicationSlice";
 
 export const SearchPage = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
+  const selectedPlan = useSelector((state) => state.application.selectedPlan);
+  const selectedScholarships = useSelector(
+    (state) => state.application.selectedScholarships,
+  );
+
   const [scholarships, setScholarships] = useState([]);
 
   const [fields, setFields] = useState([]);
@@ -34,8 +44,6 @@ export const SearchPage = () => {
 
   const [selectedScholarship, setSelectedScholarship] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
-
-  const [selectedPlan, setSelectedPlan] = useState(null);
 
   const [filterStats, setFilterStats] = useState({
     fields: [],
@@ -142,6 +150,35 @@ export const SearchPage = () => {
     fetchScholarships(nextPage);
   };
 
+  const handleSelectScholarship = (scholarship) => {
+    if (!selectedPlan) {
+      toast.error("Select a membership plan first");
+      return;
+    }
+
+    const alreadySelected = selectedScholarships.some(
+      (s) => s._id === scholarship._id,
+    );
+
+    if (
+      selectedScholarships.length >= selectedPlan.maxScholarships &&
+      !alreadySelected
+    ) {
+      toast.warning(
+        `You can select only ${selectedPlan.maxScholarships} scholarships`,
+      );
+      return;
+    }
+
+    if (alreadySelected) {
+      dispatch(removeScholarship(scholarship._id));
+      toast("Scholarship removed from your list");
+    } else {
+      dispatch(addScholarship(scholarship));
+      toast.success("Scholarship added to your list");
+    }
+  };
+
   const clearAll = () => {
     setSelectedFields([]);
     setSelectedDegrees([]);
@@ -164,11 +201,22 @@ export const SearchPage = () => {
     return diffDays <= 30 && diffDays > 0;
   };
 
+  const sortedScholarships = useMemo(() => {
+    return [...scholarships].sort((a, b) => {
+      const aSelected = selectedScholarships.some((s) => s._id === a._id);
+      const bSelected = selectedScholarships.some((s) => s._id === b._id);
+
+      if (aSelected && !bSelected) return -1;
+      if (!aSelected && bSelected) return 1;
+      return 0;
+    });
+  }, [scholarships, selectedScholarships]);
+
   return (
     <>
       {decorativeElements}
 
-      <div className="pt-24 pb-12 min-h-screen">
+      <div className="pt-24 pb-12 min-h-screen mt-20">
         <div className="max-w-7xl mx-auto px-4">
           {/* HEADER */}
           <div className="mb-6">
@@ -188,10 +236,6 @@ export const SearchPage = () => {
               </span>{" "}
               Scholarship
             </h1>
-
-            <p className="text-gray-600 text-sm max-w-2xl">
-              Discover opportunities that match your academic profile.
-            </p>
 
             <div className="flex flex-wrap items-center gap-3 mt-3 text-sm text-gray-600">
               <span className="flex items-center gap-1">
@@ -229,6 +273,13 @@ export const SearchPage = () => {
 
             {/* RESULTS */}
             <div>
+              {selectedPlan && (
+                <div className="mb-3 text-sm text-gray-600 font-medium">
+                  Selected {selectedScholarships.length} /{" "}
+                  {selectedPlan.maxScholarships} scholarships
+                </div>
+              )}
+
               {/* SEARCH */}
               <div className="sticky top-20 bg-white/80 backdrop-blur rounded-lg mb-4 p-1 border">
                 <div className="flex items-center">
@@ -249,23 +300,35 @@ export const SearchPage = () => {
                 </div>
               </div>
 
+              {loading && (
+                <div className="flex justify-center py-10">
+                  <Spinner />
+                </div>
+              )}
+
               {/* CARDS */}
               <div className="space-y-3">
-                {scholarships.map((scholarship) => {
+                {/* {scholarships.map((scholarship) => { */}
+                {sortedScholarships.map((scholarship) => {
                   const nearDeadline = isDeadlineNear(
                     scholarship.applicationDeadline,
+                  );
+
+                  const isSelected = selectedScholarships.some(
+                    (s) => s._id === scholarship._id,
                   );
 
                   return (
                     <div
                       key={scholarship._id}
                       className={`relative bg-white border rounded-lg p-4 flex gap-3 items-start ${
-                        nearDeadline
-                          ? "border-red-500 ring-1 ring-red-300"
-                          : "border-black-200"
+                        isSelected
+                          ? "border-green-500 ring-1 ring-green-300"
+                          : nearDeadline
+                            ? "border-red-500 ring-1 ring-red-300"
+                            : "border-gray-200"
                       }`}
                     >
-                      {/* DEADLINE BADGE */}
                       {nearDeadline && (
                         <span className="absolute -top-2 -right-2 bg-red-600 text-white text-[10px] px-2 py-1 rounded-full shadow">
                           Deadline Soon
@@ -285,61 +348,134 @@ export const SearchPage = () => {
                           {scholarship.description}
                         </p>
 
-                        <div className="flex gap-2 text-xs mt-1">
-                          <span
-                            className={`flex items-center gap-1 ${
-                              nearDeadline
-                                ? "text-red-600 font-semibold"
-                                : "text-black-600"
-                            }`}
-                          >
+                        {/* <div className="flex gap-2 text-xs mt-1">
+                          <span className="flex items-center gap-1">
                             <FiCalendar size={12} />
                             {formatDate(scholarship.applicationDeadline)}
                           </span>
+                        </div> */}
+                        <div className="flex flex-wrap gap-3 text-xs mt-2">
+                          {/* Application Start Date */}
+                          {scholarship.applicationStartDate && (
+                            <div className="flex items-center gap-1 text-xs text-gray-600 mt-2">
+                              <FiCalendar size={12} />
+                              Start:{" "}
+                              {formatDate(scholarship.applicationStartDate)}
+                            </div>
+                          )}{" "}
                         </div>
                       </div>
 
-                      <button
-                        onClick={() => {
-                          setSelectedScholarship(scholarship);
-                          setIsDetailsOpen(true);
-                        }}
-                        className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md flex items-center gap-1"
-                      >
-                        View
-                        <FiChevronRight size={12} />
-                      </button>
+                      <div className="flex flex-col items-end gap-2 min-w-[120px]">
+                        <button
+                          onClick={() => {
+                            setSelectedScholarship(scholarship);
+                            setIsDetailsOpen(true);
+                          }}
+                          className="text-xs bg-blue-600 text-white px-3 py-1.5 rounded-md flex items-center gap-1"
+                        >
+                          View
+                          <FiChevronRight size={12} />
+                        </button>
+
+                        <button
+                          onClick={() => handleSelectScholarship(scholarship)}
+                          className={`text-xs px-3 py-1.5 rounded-md border ${
+                            isSelected
+                              ? "bg-green-600 text-white border-green-600"
+                              : "bg-white border-gray-300 hover:bg-gray-50"
+                          }`}
+                        >
+                          {isSelected ? "Selected" : "Select"}
+                        </button>
+
+                        {/* Deadline */}
+                        <div
+                          className={`flex items-center gap-1 text-xs ${
+                            nearDeadline
+                              ? "text-red-600 font-semibold"
+                              : "text-gray-600"
+                          }`}
+                        >
+                          <FiCalendar size={12} />
+                          Deadline:{" "}
+                          {formatDate(scholarship.applicationDeadline)}
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               </div>
 
-              {page < totalPages && (
-                <div className="flex justify-center mt-4">
+              {/* <div className="flex justify-between items-center mt-6">
+                {page < totalPages && (
                   <button
                     onClick={loadMore}
-                    className="px-4 py-2 text-sm border rounded-md"
+                    className="px-5 py-2 text-sm font-medium rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 hover:border-blue-600 cursor-pointer transition"
                   >
                     Load More
                   </button>
-                </div>
-              )}
+                )}
+
+                {selectedScholarships.length > 0 && (
+                  <button className="bg-gradient-to-r from-blue-600 to-amber-500 text-white px-6 py-2 rounded-lg text-sm font-medium shadow hover:opacity-90 cursor-pointer transition">
+                    Next
+                  </button>
+                )}
+              </div> */}
+              <div className="flex justify-center mt-6">
+                {page < totalPages && (
+                  <button
+                    onClick={loadMore}
+                    className="px-5 py-2 text-sm font-medium rounded-lg border border-blue-500 text-blue-600 bg-white hover:bg-blue-50 hover:border-blue-600 cursor-pointer transition"
+                  >
+                    Load More
+                  </button>
+                )}
+              </div>
             </div>
 
             {/* MEMBERSHIP */}
             <div className="lg:sticky lg:top-24">
+              {/* <MemberPlans
+                selectedPlan={selectedPlan}
+                setSelectedPlan={(plan) => dispatch(setSelectedPlan(plan))}
+              /> */}
               <MemberPlans
                 selectedPlan={selectedPlan}
-                setSelectedPlan={setSelectedPlan}
+                setSelectedPlan={(plan) => {
+                  if (selectedScholarships.length > plan.maxScholarships) {
+                    toast.warning(
+                      `Plan allows only ${plan.maxScholarships} scholarships. Extra selections were removed.`,
+                    );
+                  }
+
+                  dispatch(setSelectedPlan(plan));
+                }}
               />
             </div>
           </div>
         </div>
 
+        {/* Floating Next Button */}
+        {selectedScholarships.length > 0 && selectedPlan && (
+          <div className="fixed bottom-6 right-6 z-50">
+            <button
+              onClick={() => navigate("/checkout")}
+              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-xl text-sm font-semibold hover:scale-105 hover:shadow-2xl transition cursor-pointer"
+            >
+              {selectedScholarships.length} Selected
+              <FiChevronRight size={16} />
+              Next
+            </button>
+          </div>
+        )}
+
         <ScholarshipDetailsModal
           isOpen={isDetailsOpen}
           onClose={() => setIsDetailsOpen(false)}
           scholarship={selectedScholarship}
+          onApply={handleSelectScholarship}
         />
       </div>
     </>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useSelector } from "react-redux";
 import { motion, AnimatePresence } from "motion/react";
 import { Menu, X } from "lucide-react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
@@ -29,10 +30,9 @@ export const Navbar = () => {
      HANDLE SCHOLARSHIP CLICK
   =============================== */
 
-  const handleScholarshipClick = () => {
-    const enquiry = localStorage.getItem("scholarshipEnquiry");
+  const enquiry = useSelector((state) => state.application.enquiryDetails);
 
-    // if already filled enquiry → go to search
+  const handleScholarshipClick = () => {
     if (enquiry) {
       navigate("/search");
     } else {
@@ -61,12 +61,12 @@ export const Navbar = () => {
               className="h-14 w-auto"
             />
 
-            <div className="flex flex-col leading-none text-center -mt-6">
+            <div className="flex flex-col leading-none text-center">
               <span
                 className="text-edufin-deep text-xl tracking-tight"
                 style={{ fontFamily: "'Playfair Display', serif" }}
               >
-                E d u f i n
+                Edufin
               </span>
 
               <span

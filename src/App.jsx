@@ -1,22 +1,30 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
-import { Navbar } from './components/Navbar';
-import { Footer } from './components/Footer';
-import { HomePage } from './pages/HomePage';
-import { SearchPage } from './pages/SearchPage';
-import { DetailsPage } from './pages/DetailsPage';
-import { DashboardPage } from './pages/DashboardPage';
-import { MessageCircle } from 'lucide-react';
-import { motion } from 'motion/react';
-
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
+import { useEffect } from "react";
+import { Navbar } from "./components/Navbar";
+import { Footer } from "./components/Footer";
+import { HomePage } from "./pages/HomePage";
+import { SearchPage } from "./pages/SearchPage";
+import { DetailsPage } from "./pages/DetailsPage";
+import { DashboardPage } from "./pages/DashboardPage";
+import { MessageCircle } from "lucide-react";
+import { motion } from "motion/react";
+import CheckOutPage from "./components/CheckoutPage";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "sonner";
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
   useEffect(() => {
     if (hash) {
-      const element = document.getElementById(hash.replace('#', ''));
+      const element = document.getElementById(hash.replace("#", ""));
       if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
+        element.scrollIntoView({ behavior: "smooth" });
       }
     } else {
       window.scrollTo(0, 0);
@@ -45,18 +53,31 @@ export default function App() {
   return (
     <Router>
       <ScrollToTop />
+
+      {/* Toast Notifications */}
+      <Toaster
+        position="top-right"
+        richColors
+        closeButton
+        expand
+        duration={3000}
+      />
+
       <div className="min-h-screen flex flex-col">
         <Navbar />
+
         <main className="grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/scholarship/:id" element={<DetailsPage />} />
             <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/checkout" element={<CheckOutPage />} />
           </Routes>
         </main>
+
         <Footer />
-        <WhatsAppButton />
+        {/* <WhatsAppButton /> */}
       </div>
     </Router>
   );

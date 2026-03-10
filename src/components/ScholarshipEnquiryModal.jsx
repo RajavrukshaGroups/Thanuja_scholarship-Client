@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useDispatch } from "react-redux";
+import { setEnquiryDetails } from "../../store/applicationSlice";
 import { motion, AnimatePresence } from "motion/react";
 import { useNavigate } from "react-router-dom";
 import api from "../utils/api";
@@ -8,6 +10,7 @@ import { GiGraduateCap } from "react-icons/gi";
 
 const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   const [form, setForm] = useState({
     fullName: "",
@@ -32,9 +35,14 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
         delete payload.degreeLevel;
       }
 
-      await api.post("/scholar/enquiry", payload);
+      const res = await api.post("/scholar/enquiry", payload);
 
-      localStorage.setItem("scholarshipEnquiry", JSON.stringify(payload));
+      dispatch(
+        setEnquiryDetails({
+          ...payload,
+          enquiryId: res.data.data._id,
+        }),
+      );
 
       navigate("/search");
 

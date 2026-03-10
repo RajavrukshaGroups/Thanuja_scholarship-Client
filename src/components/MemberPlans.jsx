@@ -49,10 +49,10 @@ const MemberPlans = ({ selectedPlan, setSelectedPlan }) => {
         {plans.map((plan, index) => (
           <div
             key={plan._id}
-            onClick={() => setSelectedPlan(plan._id)}
+            onClick={() => setSelectedPlan(plan)}
             className={`relative rounded-xl border p-5 cursor-pointer transition-all duration-300
             ${
-              selectedPlan === plan._id
+              selectedPlan?._id === plan._id
                 ? "border-amber-500 ring-2 ring-amber-200 bg-amber-50/40 shadow-md"
                 : "border-gray-200 hover:border-blue-300 hover:shadow-sm"
             }`}
@@ -110,21 +110,21 @@ const MemberPlans = ({ selectedPlan, setSelectedPlan }) => {
             <button
               className={`w-full text-xs font-medium py-2 rounded-lg transition-all
               ${
-                selectedPlan === plan._id
+                selectedPlan?._id === plan._id
                   ? "bg-gradient-to-r from-blue-600 to-amber-500 text-white"
                   : "bg-gray-100 text-gray-700 hover:bg-gray-200"
               }`}
             >
-              {selectedPlan === plan._id ? "Selected Plan" : "Select Plan"}
+              {selectedPlan?._id === plan._id ? "Selected Plan" : "Select Plan"}
             </button>
           </div>
         ))}
       </div>
 
       {/* FOOTER */}
-      <div className="px-5 py-3 bg-gray-50 border-t text-xs text-gray-500 text-center">
+      {/* <div className="px-5 py-3 bg-gray-50 border-t text-xs text-gray-500 text-center">
         Choose a plan to unlock premium scholarships
-      </div>
+      </div> */}
     </div>
   );
 };
