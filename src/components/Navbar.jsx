@@ -9,9 +9,14 @@ export const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const location = useLocation();
   const navigate = useNavigate();
+
+  /* ===============================
+     SCROLL EFFECT
+  =============================== */
 
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 20);
@@ -19,16 +24,35 @@ export const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  /* ===============================
+     CHECK LOGIN STATE
+  =============================== */
+
+  useEffect(() => {
+    const token = localStorage.getItem("scholarToken");
+    setIsLoggedIn(!!token);
+  }, [location.pathname]);
+  /* ===============================
+     LOGOUT
+  =============================== */
+
+  const handleLogout = () => {
+    localStorage.removeItem("scholarToken");
+    localStorage.removeItem("scholarUser");
+
+    setIsLoggedIn(false);
+    navigate("/");
+  };
+
+  /* ===============================
+     NAV ITEMS
+  =============================== */
+
   const navItems = [
     { name: "Home", path: "/" },
     { name: "Scholarships", path: "/search" },
-    { name: "Scholorship Details", path: "/#premium" },
-    { name: "Dashboard", path: "/dashboard" },
+    { name: "Scholarship Details", path: "/#premium" },
   ];
-
-  /* ===============================
-     HANDLE SCHOLARSHIP CLICK
-  =============================== */
 
   const enquiry = useSelector((state) => state.application.enquiryDetails);
 
@@ -51,10 +75,7 @@ export const Navbar = () => {
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* LOGO */}
-          <Link
-            to="/"
-            className="flex justify-center flex-col items-center ml-12"
-          >
+          <Link to="/" className="flex flex-col items-center ml-12">
             <img
               src="/assets/edufin-logo.png"
               alt="Edufin Logo"
@@ -107,9 +128,32 @@ export const Navbar = () => {
               ),
             )}
 
-            <button className="bg-edufin-deep text-white px-6 py-2.5 rounded-full font-semibold hover:bg-edufin-royal transition-all shadow-lg shadow-edufin-deep/20">
-              Get Started
-            </button>
+            {/* DASHBOARD */}
+            {isLoggedIn && (
+              <Link
+                to="/dashboard"
+                className="font-medium text-slate-600 hover:text-edufin-royal"
+              >
+                Dashboard
+              </Link>
+            )}
+
+            {/* LOGIN / LOGOUT BUTTON */}
+            {isLoggedIn ? (
+              <button
+                onClick={handleLogout}
+                className="bg-red-500 text-white px-6 py-2.5 rounded-full font-semibold hover:bg-red-600 transition"
+              >
+                Logout
+              </button>
+            ) : (
+              <button
+                onClick={() => navigate("/login")}
+                className="bg-edufin-deep text-white px-6 py-2.5 rounded-full font-semibold hover:bg-edufin-royal transition shadow-lg"
+              >
+                Get Started
+              </button>
+            )}
           </div>
 
           {/* MOBILE MENU BUTTON */}
@@ -153,12 +197,45 @@ export const Navbar = () => {
                   </Link>
                 ),
               )}
+
+              {/* DASHBOARD */}
+              {isLoggedIn && (
+                <Link
+                  to="/dashboard"
+                  className="text-slate-600 font-medium py-2"
+                  onClick={() => setIsMenuOpen(false)}
+                >
+                  Dashboard
+                </Link>
+              )}
+
+              {/* LOGIN / LOGOUT */}
+              {isLoggedIn ? (
+                <button
+                  onClick={() => {
+                    handleLogout();
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-red-500 font-medium py-2 text-left"
+                >
+                  Logout
+                </button>
+              ) : (
+                <button
+                  onClick={() => {
+                    navigate("/login");
+                    setIsMenuOpen(false);
+                  }}
+                  className="text-edufin-deep font-medium py-2 text-left"
+                >
+                  Login
+                </button>
+              )}
             </motion.div>
           )}
         </AnimatePresence>
       </nav>
 
-      {/* MODAL */}
       <ScholarshipEnquiryModal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}

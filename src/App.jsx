@@ -14,9 +14,12 @@ import { DashboardPage } from "./pages/DashboardPage";
 import { MessageCircle } from "lucide-react";
 import { motion } from "motion/react";
 import CheckOutPage from "./components/CheckoutPage";
+import LoginPage from "./pages/scholarPages/loginPage";
+import ProtectedRoute from "./components/protectedRoute";
 // import { ToastContainer } from "react-toastify";
 // import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "sonner";
+import PaymentSuccess from "./components/PaymentSuccess";
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
@@ -71,8 +74,18 @@ export default function App() {
             <Route path="/" element={<HomePage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/scholarship/:id" element={<DetailsPage />} />
-            <Route path="/dashboard" element={<DashboardPage />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route
+              path="/dashboard"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
+            />
+            {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
             <Route path="/checkout" element={<CheckOutPage />} />
+            <Route path="/payment-success" element={<PaymentSuccess />} />
           </Routes>
         </main>
 

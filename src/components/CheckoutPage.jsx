@@ -29,6 +29,7 @@ const CheckOutPage = () => {
   const navigate = useNavigate();
 
   const enquiry = useSelector((state) => state.application.enquiryDetails);
+  const [isProcessing, setIsProcessing] = useState(false);
   const selectedScholarships = useSelector(
     (state) => state.application.selectedScholarships,
   );
@@ -70,8 +71,67 @@ const CheckOutPage = () => {
     }).format(amount);
   };
 
+  //   const handlePayment = async () => {
+  //     try {
+  //       if (isProcessing) return;
+  //       setIsProcessing(true);
+  //       const payload = {
+  //         planId: selectedPlan._id,
+  //         enquiryId: enquiry?._id,
+
+  //         userData: {
+  //           fullName: form.fullName,
+  //           email: form.email,
+  //           phone: form.phone,
+  //           educationLevel: form.educationLevel,
+  //           degreeLevel: form.degreeLevel,
+  //         },
+
+  //         scholarships: selectedScholarships,
+  //       };
+
+  //       const { data } = await api.post("/scholar/payment/create-order", payload);
+
+  //       const order = data.order;
+
+  //       const rzp = new window.Razorpay({
+  //         key: data.key,
+  //         amount: order.amount,
+  //         currency: order.currency,
+  //         order_id: order.id,
+  //         name: "Edufin Scholarships",
+  //         description: selectedPlan.planTitle,
+
+  //         handler: async function (response) {
+  //           await api.post("/scholar/payment/verify-payment", {
+  //             ...response,
+  //           });
+
+  //           //   alert("Payment successful");
+  //           toast.success("Payment Successful");
+  //           dispatch(resetApplicationState());
+  //           navigate("/dashboard");
+  //         },
+  //       });
+
+  //       rzp.open();
+  //     } catch (err) {
+  //       if (err.response?.data?.message) {
+  //         // alert(err.response.data.message);
+  //         toast.error(err.response.data.message);
+  //       } else {
+  //         // alert("Something went wrong");
+  //         toast.error("Something went wrong");
+  //       }
+  //     }
+  //   };
+
   const handlePayment = async () => {
     try {
+      if (isProcessing) return; // prevent double click
+
+      setIsProcessing(true);
+
       const payload = {
         planId: selectedPlan._id,
         enquiryId: enquiry?._id,
@@ -104,20 +164,19 @@ const CheckOutPage = () => {
             ...response,
           });
 
-          //   alert("Payment successful");
-          toast.success("Payment Successful");
           dispatch(resetApplicationState());
-          navigate("/dashboard");
+
+          navigate("/payment-success");
         },
       });
 
       rzp.open();
     } catch (err) {
+      setIsProcessing(false);
+
       if (err.response?.data?.message) {
-        // alert(err.response.data.message);
         toast.error(err.response.data.message);
       } else {
-        // alert("Something went wrong");
         toast.error("Something went wrong");
       }
     }
@@ -546,17 +605,17 @@ const CheckOutPage = () => {
           {/* PROCEED BUTTON */}
           <motion.button
             onClick={handlePayment}
-            whileHover={isFormValid ? { scale: 1.02 } : {}}
-            whileTap={isFormValid ? { scale: 0.98 } : {}}
-            disabled={!isFormValid}
+            whileHover={isFormValid && !isProcessing ? { scale: 1.02 } : {}}
+            whileTap={isFormValid && !isProcessing ? { scale: 0.98 } : {}}
+            disabled={!isFormValid || isProcessing}
             className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all shadow-lg ${
-              isFormValid
+              isFormValid && !isProcessing
                 ? "bg-gradient-to-r from-blue-600 to-amber-500 text-white hover:shadow-xl hover:shadow-blue-500/25"
                 : "bg-gray-300 text-gray-500 cursor-not-allowed"
             }`}
           >
-            <span>Proceed to Payment</span>
-            <FiChevronRight className="text-lg" />
+            <span>{isProcessing ? "Processing..." : "Proceed to Payment"}</span>
+            {!isProcessing && <FiChevronRight className="text-lg" />}
           </motion.button>
         </div>
       </motion.div>
