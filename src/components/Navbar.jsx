@@ -57,6 +57,13 @@ export const Navbar = () => {
   const enquiry = useSelector((state) => state.application.enquiryDetails);
 
   const handleScholarshipClick = () => {
+    // If user already logged in → go directly
+    if (isLoggedIn) {
+      navigate("/search");
+      return;
+    }
+
+    // If enquiry already submitted
     if (enquiry) {
       navigate("/search");
     } else {
@@ -236,10 +243,12 @@ export const Navbar = () => {
         </AnimatePresence>
       </nav>
 
-      <ScholarshipEnquiryModal
-        isOpen={openModal}
-        onClose={() => setOpenModal(false)}
-      />
+      {!isLoggedIn && (
+        <ScholarshipEnquiryModal
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
+        />
+      )}
     </>
   );
 };

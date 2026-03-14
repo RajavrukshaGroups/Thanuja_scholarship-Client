@@ -1,9 +1,11 @@
 import { useSelector, useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   updateEnquiryDetails,
   resetApplicationState,
+  setSelectedPlan,
+  addScholarship,
 } from "../../store/applicationSlice";
 import {
   FiArrowLeft,
@@ -27,6 +29,33 @@ import { toast } from "sonner";
 const CheckOutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadMemberData = async () => {
+      try {
+        const token = localStorage.getItem("scholarToken");
+
+        if (!token) return;
+
+        const res = await api.get("/scholar/user/profile");
+
+        const plan = res.data.membershipPlan;
+        const scholarships = res.data.selectedScholarships || [];
+
+        if (plan) {
+          dispatch(setSelectedPlan(plan));
+        }
+
+        scholarships.forEach((s) => {
+          dispatch(addScholarship(s.scholarship));
+        });
+      } catch (err) {
+        console.log("Failed to load member data", err);
+      }
+    };
+
+    loadMemberData();
+  }, []);
 
   const enquiry = useSelector((state) => state.application.enquiryDetails);
   const [isProcessing, setIsProcessing] = useState(false);

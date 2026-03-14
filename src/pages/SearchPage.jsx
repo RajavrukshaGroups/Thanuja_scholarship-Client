@@ -20,6 +20,7 @@ import {
   setSelectedPlan,
   addScholarship,
   removeScholarship,
+  setSelectedScholarships,
 } from "../../store/applicationSlice";
 
 export const SearchPage = () => {
@@ -27,11 +28,19 @@ export const SearchPage = () => {
   const navigate = useNavigate();
 
   const selectedPlan = useSelector((state) => state.application.selectedPlan);
+  console.log("selected plan", selectedPlan);
   const selectedScholarships = useSelector(
     (state) => state.application.selectedScholarships,
   );
 
+  const [lockedScholarships, setLockedScholarships] = useState([]);
+  console.log("locked scholarship", lockedScholarships);
+
   const [scholarships, setScholarships] = useState([]);
+
+  const newSelectedCount = selectedScholarships.filter(
+    (s) => !lockedScholarships.includes(s._id),
+  ).length;
 
   const [fields, setFields] = useState([]);
   const [types, setTypes] = useState([]);
@@ -44,6 +53,8 @@ export const SearchPage = () => {
 
   const [selectedScholarship, setSelectedScholarship] = useState(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+
+  const [hasActiveMembership, setHasActiveMembership] = useState(false);
 
   const [filterStats, setFilterStats] = useState({
     fields: [],
@@ -75,6 +86,36 @@ export const SearchPage = () => {
       }, 500),
     [],
   );
+
+  useEffect(() => {
+    const loadMemberData = async () => {
+      try {
+        const token = localStorage.getItem("scholarToken");
+
+        if (!token) return;
+
+        const res = await api.get("/scholar/user/profile");
+
+        const plan = res.data.membershipPlan;
+        const scholarships = res.data.selectedScholarships || [];
+
+        if (plan) {
+          setHasActiveMembership(true);
+          dispatch(setSelectedPlan(plan));
+        }
+
+        const scholarshipList = scholarships.map((s) => s.scholarship);
+
+        setLockedScholarships(scholarshipList.map((s) => s._id));
+
+        dispatch(setSelectedScholarships(scholarshipList));
+      } catch (err) {
+        console.log("Failed to load member data", err);
+      }
+    };
+
+    loadMemberData();
+  }, [dispatch]);
 
   useEffect(() => {
     return () => debouncedSearchHandler.cancel();
@@ -150,6 +191,12 @@ export const SearchPage = () => {
     fetchScholarships(nextPage);
   };
 
+  // const handleSelectScholarship = (scholarship) => {
+  //   if (!selectedPlan) {
+  //     toast.error("Select a membership plan first");
+  //     return;
+  //   }
+
   const handleSelectScholarship = (scholarship) => {
     if (!selectedPlan) {
       toast.error("Select a membership plan first");
@@ -159,13 +206,19 @@ export const SearchPage = () => {
     const alreadySelected = selectedScholarships.some(
       (s) => s._id === scholarship._id,
     );
+    console.log("already selected", alreadySelected);
+
+    if (alreadySelected && lockedScholarships.includes(scholarship._id)) {
+      toast.warning("This scholarship is locked in your membership");
+      return;
+    }
 
     if (
-      selectedScholarships.length >= selectedPlan.maxScholarships &&
-      !alreadySelected
+      !alreadySelected &&
+      selectedScholarships.length >= selectedPlan.maxScholarships
     ) {
       toast.warning(
-        `You can select only ${selectedPlan.maxScholarships} scholarships`,
+        `Your ${selectedPlan.planTitle} plan allows only ${selectedPlan.maxScholarships} scholarships`,
       );
       return;
     }
@@ -179,6 +232,19 @@ export const SearchPage = () => {
     }
   };
 
+  const handleProceed = async () => {
+    try {
+      await api.post("/scholar/user/scholar/subscription/update-scholarships", {
+        scholarships: selectedScholarships,
+      });
+
+      toast.success("Scholarships updated successfully");
+
+      navigate("/dashboard");
+    } catch (error) {
+      toast.error("Failed to update scholarships");
+    }
+  };
   const clearAll = () => {
     setSelectedFields([]);
     setSelectedDegrees([]);
@@ -281,6 +347,12 @@ export const SearchPage = () => {
               )}
 
               {/* SEARCH */}
+              {hasActiveMembership && (
+                <div className="mb-4 p-3 rounded-lg bg-blue-50 border border-blue-200 text-sm text-blue-700">
+                  You already have an active membership. Scholarships are
+                  locked. Upgrade your plan from the Profile page if needed.
+                </div>
+              )}
               <div className="sticky top-20 bg-white/80 backdrop-blur rounded-lg mb-4 p-1 border">
                 <div className="flex items-center">
                   <div className="bg-gradient-to-r from-blue-500 to-amber-500 p-2 rounded-lg m-1">
@@ -443,7 +515,12 @@ export const SearchPage = () => {
               /> */}
               <MemberPlans
                 selectedPlan={selectedPlan}
+                disabled={hasActiveMembership}
                 setSelectedPlan={(plan) => {
+                  if (hasActiveMembership) {
+                    toast.warning("You already have an active membership");
+                    return;
+                  }
                   if (selectedScholarships.length > plan.maxScholarships) {
                     toast.warning(
                       `Plan allows only ${plan.maxScholarships} scholarships. Extra selections were removed.`,
@@ -458,15 +535,30 @@ export const SearchPage = () => {
         </div>
 
         {/* Floating Next Button */}
-        {selectedScholarships.length > 0 && selectedPlan && (
+        {selectedScholarships.length > 0 &&
+          selectedPlan &&
+          !hasActiveMembership && (
+            <div className="fixed bottom-6 right-6 z-50">
+              <button
+                onClick={() => navigate("/checkout")}
+                className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-xl text-sm font-semibold hover:scale-105 hover:shadow-2xl transition cursor-pointer"
+              >
+                {selectedScholarships.length} Selected
+                <FiChevronRight size={16} />
+                Next
+              </button>
+            </div>
+          )}
+
+        {newSelectedCount > 0 && hasActiveMembership && (
           <div className="fixed bottom-6 right-6 z-50">
             <button
-              onClick={() => navigate("/checkout")}
-              className="flex items-center gap-2 bg-gradient-to-r from-blue-600 to-amber-500 text-white px-6 py-3 rounded-full shadow-xl text-sm font-semibold hover:scale-105 hover:shadow-2xl transition cursor-pointer"
+              onClick={handleProceed}
+              className="flex items-center gap-2 bg-green-600 text-white px-6 py-3 rounded-full shadow-xl text-sm font-semibold hover:scale-105 transition"
             >
-              {selectedScholarships.length} Selected
+              {newSelectedCount} New Selected
               <FiChevronRight size={16} />
-              Next
+              Proceed to Dashboard
             </button>
           </div>
         )}
