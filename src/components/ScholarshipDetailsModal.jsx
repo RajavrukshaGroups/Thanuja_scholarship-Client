@@ -13,6 +13,7 @@ import { GiGraduateCap } from "react-icons/gi";
 
 const ScholarshipDetailsModal = ({ isOpen, onClose, scholarship, onApply }) => {
   if (!scholarship) return null;
+  console.log("scholarship", scholarship);
 
   const selectedScholarships = useSelector(
     (state) => state.application.selectedScholarships,
@@ -153,7 +154,7 @@ const ScholarshipDetailsModal = ({ isOpen, onClose, scholarship, onApply }) => {
               )}
 
               {/* Documents */}
-              {scholarship.documentsRequired?.length > 0 && (
+              {/* {scholarship.documentsRequired?.length > 0 && (
                 <div>
                   <h2 className="font-semibold text-gray-900 mb-2">
                     Documents Required
@@ -163,6 +164,22 @@ const ScholarshipDetailsModal = ({ isOpen, onClose, scholarship, onApply }) => {
                       <li key={i} className="flex gap-2">
                         <span className="text-blue-500">•</span>
                         {doc}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )} */}
+
+              {scholarship.documentsRequired?.length > 0 && (
+                <div>
+                  <h2 className="font-semibold text-gray-900 mb-2">
+                    Documents Required
+                  </h2>
+                  <ul className="space-y-1 text-gray-700 text-xs">
+                    {scholarship.documentsRequired.map((doc, i) => (
+                      <li key={i} className="flex gap-2">
+                        <span className="text-blue-500">•</span>
+                        {doc.title}
                       </li>
                     ))}
                   </ul>

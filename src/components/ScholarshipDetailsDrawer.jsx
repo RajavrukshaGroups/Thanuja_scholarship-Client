@@ -3,30 +3,71 @@ import { X, FileText, CheckCircle } from "lucide-react";
 import { FiAward, FiCalendar, FiMapPin, FiChevronRight } from "react-icons/fi";
 import { MdOutlineSchool, MdOutlineEmojiEvents } from "react-icons/md";
 import { FaUniversity, FaGraduationCap, FaRegClock } from "react-icons/fa";
+import { useState, useEffect } from "react";
+import api from "../utils/api";
 
-const ScholarshipDetailsDrawer = ({ isOpen, onClose, scholarship }) => {
-  if (!scholarship) return null;
+const ScholarshipDetailsDrawer = ({
+  isOpen,
+  onClose,
+  scholarship,
+  onOpenUploadModal,
+  onApplicationSuccess,
+}) => {
+  const [uploadedDocs, setUploadedDocs] = useState([]);
+  const [applicationStatus, setApplicationStatus] = useState(null);
+  console.log("uploaded documents", uploadedDocs);
+  console.log("scholarships details", scholarship);
 
-  const handleUpload = async (e, documentName) => {
-    const file = e.target.files[0];
+  const isApplied = applicationStatus?.applied;
+  const status = applicationStatus?.status;
+  const isRejected = status === "rejected";
 
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append("document", file);
-    formData.append("documentName", documentName);
-    formData.append("scholarshipId", scholarship._id);
-
+  const fetchUserDocuments = async () => {
     try {
-      await api.post("/scholar/user/scholar/upload-document", formData, {
-        headers: { "Content-Type": "multipart/form-data" },
-      });
-
-      alert("Document uploaded successfully");
-    } catch (err) {
-      console.error(err);
+      const res = await api.get("/scholar/user/scholar/documents");
+      setUploadedDocs(res.data.documents);
+    } catch (error) {
+      console.log(error);
     }
   };
+
+  const fetchApplicationStatus = async () => {
+    try {
+      const res = await api.get(
+        `/scholar/user/scholar/application-status/${scholarship._id}`,
+      );
+
+      setApplicationStatus(res.data);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    if (isOpen && scholarship?._id) {
+      fetchUserDocuments();
+      fetchApplicationStatus();
+    }
+  }, [isOpen, scholarship]);
+
+  const getDocumentStatus = (docName) => {
+    const found = uploadedDocs.find(
+      (d) => d.document?.documentName === docName,
+    );
+
+    return found ? found.document.verificationStatus : null;
+  };
+
+  if (!scholarship) return null;
+
+  const totalDocs = scholarship?.documentsRequired?.length;
+  console.log("total documents", scholarship);
+
+  const uploadedCount = scholarship?.documentsRequired.filter((doc) =>
+    uploadedDocs.some((d) => d.document?.documentName === doc.title),
+  ).length;
+
+  const allDocsUploaded = uploadedCount === totalDocs;
 
   return (
     <AnimatePresence>
@@ -102,6 +143,15 @@ const ScholarshipDetailsDrawer = ({ isOpen, onClose, scholarship }) => {
                 </div>
               </div>
 
+              {applicationStatus?.applied && (
+                <div className="text-xs p-3 rounded-lg border">
+                  Status:{" "}
+                  <span className="font-semibold capitalize">
+                    {applicationStatus.status}
+                  </span>
+                </div>
+              )}
+
               {/* Eligibility Section */}
               <div className="space-y-4">
                 <div className="flex items-center gap-3">
@@ -147,26 +197,78 @@ const ScholarshipDetailsDrawer = ({ isOpen, onClose, scholarship }) => {
                 </div>
 
                 <div className="space-y-3">
-                  {scholarship.documentsRequired?.map((doc, index) => (
+                  {/* {scholarship.documentsRequired?.map((doc, index) => (
                     <div
                       key={index}
                       className="flex items-center justify-between bg-white border rounded-xl p-4"
                     >
                       <span className="text-sm text-gray-700">{doc}</span>
-
-                      <label className="cursor-pointer">
-                        <input
-                          type="file"
-                          className="hidden"
-                          onChange={(e) => handleUpload(e, doc)}
-                        />
-
-                        <span className="text-sm bg-blue-600 text-white px-4 py-1.5 rounded-lg hover:bg-blue-700">
-                          Upload
-                        </span>
-                      </label>
                     </div>
-                  ))}
+                  ))} */}
+                  {scholarship.documentsRequired?.map((doc, index) => {
+                    const status = getDocumentStatus(doc.title);
+
+                    return (
+                      <div
+                        key={index}
+                        className={`flex items-center justify-between rounded-xl p-4 border
+        ${
+          status === "verified"
+            ? "border-green-300 bg-green-50"
+            : status === "pending"
+              ? "border-yellow-300 bg-yellow-50"
+              : status === "rejected"
+                ? "border-red-300 bg-red-50"
+                : "border-gray-200 bg-white"
+        }
+      `}
+                      >
+                        <div className="flex flex-col">
+                          <span className="text-sm text-gray-700">
+                            {doc.title}
+                          </span>
+
+                          {status === "verified" && (
+                            <span className="text-xs text-green-600">
+                              ✔ Verified
+                            </span>
+                          )}
+
+                          {status === "pending" && (
+                            <span className="text-xs text-yellow-600">
+                              ⏳ Under Review
+                            </span>
+                          )}
+
+                          {status === "rejected" && (
+                            <span className="text-xs text-red-600">
+                              ❌ Rejected
+                            </span>
+                          )}
+
+                          {!status && (
+                            <span className="text-xs text-gray-400">
+                              Not uploaded
+                            </span>
+                          )}
+                        </div>
+
+                        <button
+                          // onClick={onOpenUploadModal}
+                          onClick={() => {
+                            onClose();
+
+                            setTimeout(() => {
+                              onOpenUploadModal();
+                            }, 200); // match drawer animation
+                          }}
+                          className="text-xs bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg"
+                        >
+                          Upload
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
 
@@ -206,11 +308,66 @@ const ScholarshipDetailsDrawer = ({ isOpen, onClose, scholarship }) => {
                 </div>
               )}
 
+              {!allDocsUploaded && (
+                <div className="text-xs text-amber-600 bg-amber-50 border border-amber-200 p-3 rounded-lg">
+                  ⚠️ You can apply now, but some documents are missing. Your
+                  application may remain under review until all documents are
+                  uploaded.
+                </div>
+              )}
+
               {/* Apply Button */}
               <div className="sticky bottom-0 bg-gradient-to-t from-white via-white to-transparent pt-4 pb-2">
-                <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3.5 rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 group">
+                {/* <button className="w-full bg-gradient-to-r from-blue-500 to-blue-600 text-white py-3.5 rounded-xl font-medium hover:shadow-lg hover:shadow-blue-500/25 transition-all hover:scale-[1.01] flex items-center justify-center gap-2 group">
                   <span>Apply for this Scholarship</span>
                   <FiChevronRight className="group-hover:translate-x-1 transition-transform" />
+                </button> */}
+
+                <button
+                  disabled={isApplied && !isRejected}
+                  onClick={async () => {
+                    try {
+                      await api.post("/scholar/user/scholar/apply", {
+                        scholarshipId: scholarship._id,
+                      });
+
+                      alert("Application submitted successfully 🎉");
+
+                      onApplicationSuccess && onApplicationSuccess(); // refresh
+                      onClose();
+                    } catch (err) {
+                      console.log(err);
+                      alert("Failed to apply");
+                    }
+                  }}
+                  className={`w-full py-3.5 rounded-xl font-medium flex items-center justify-center gap-2 transition
+    ${
+      isApplied && !isRejected
+        ? "bg-gray-400 cursor-not-allowed text-white"
+        : isRejected
+          ? "bg-red-600 text-white"
+          : allDocsUploaded
+            ? "bg-green-600 text-white"
+            : "bg-gradient-to-r from-blue-500 to-blue-600 text-white"
+    }
+  `}
+                >
+                  <span>
+                    {!isApplied
+                      ? allDocsUploaded
+                        ? "Apply Now (Ready)"
+                        : "Apply Now (Documents Pending)"
+                      : isRejected
+                        ? "Re-Apply"
+                        : status === "submitted"
+                          ? "Submitted"
+                          : status === "under_review"
+                            ? "Under Review"
+                            : status === "approved"
+                              ? "Approved ✅"
+                              : "Applied"}
+                  </span>
+                  {!isApplied || isRejected ? <FiChevronRight /> : null}
                 </button>
               </div>
             </div>
