@@ -257,6 +257,49 @@ export const DashboardPage = () => {
           </div>
         </div>
 
+        {hasUpgradePlans && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-blue-600 to-amber-500 rounded-2xl p-6 text-white shadow-xl relative overflow-hidden mb-7"
+          >
+            {/* Glow effect */}
+            <div className="absolute -top-10 -right-10 w-40 h-40 bg-white/10 rounded-full blur-3xl" />
+
+            <div className="relative flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+              {/* LEFT */}
+              <div>
+                <h3 className="text-lg font-semibold">🚀 Upgrade Your Plan</h3>
+
+                <p className="text-sm text-white/90 mt-1">
+                  Unlock more scholarships, faster approvals & premium support
+                </p>
+
+                <div className="mt-2 text-xs bg-white/20 inline-block px-3 py-1 rounded-full">
+                  Current Plan: {membershipPlans?.planTitle || "Free Plan"}
+                </div>
+              </div>
+
+              {/* RIGHT */}
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowUpgradeModal(true)}
+                  className="bg-white text-blue-600 font-medium px-5 py-2 rounded-lg hover:bg-gray-100 transition"
+                >
+                  Upgrade Plans
+                </button>
+
+                {/* <button
+                  onClick={fetchUpgradePlans}
+                  className="bg-black/20 backdrop-blur px-5 py-2 rounded-lg hover:bg-black/30 transition"
+                >
+                  Upgrade Now
+                </button> */}
+              </div>
+            </div>
+          </motion.div>
+        )}
+
         <div className="grid lg:grid-cols-4 gap-8">
           {/* Sidebar */}
           <div className="lg:col-span-1">
