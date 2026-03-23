@@ -21,11 +21,19 @@ import {
   addScholarship,
   removeScholarship,
   setSelectedScholarships,
+  resetApplicationState,
 } from "../../store/applicationSlice";
 
 export const SearchPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+
+  // useEffect(() => {
+  //   const token = localStorage.getItem("scholarToken");
+  //   if (!token) {
+  //     dispatch(resetApplicationState());
+  //   }
+  // }, [dispatch]);
 
   const selectedPlan = useSelector((state) => state.application.selectedPlan);
   console.log("selected plan", selectedPlan);
@@ -87,12 +95,46 @@ export const SearchPage = () => {
     [],
   );
 
+  // useEffect(() => {
+  //   const loadMemberData = async () => {
+  //     try {
+  //       const token = localStorage.getItem("scholarToken");
+
+  //       if (!token) return;
+
+  //       const res = await api.get("/scholar/user/profile");
+
+  //       const plan = res.data.membershipPlan;
+  //       const scholarships = res.data.selectedScholarships || [];
+
+  //       if (plan) {
+  //         setHasActiveMembership(true);
+  //         dispatch(setSelectedPlan(plan));
+  //       }
+
+  //       const scholarshipList = scholarships.map((s) => s.scholarship);
+
+  //       setLockedScholarships(scholarshipList.map((s) => s._id));
+
+  //       dispatch(setSelectedScholarships(scholarshipList));
+  //     } catch (err) {
+  //       console.log("Failed to load member data", err);
+  //     }
+  //   };
+
+  //   loadMemberData();
+  // }, [dispatch]);
+
   useEffect(() => {
     const loadMemberData = async () => {
       try {
         const token = localStorage.getItem("scholarToken");
 
-        if (!token) return;
+        // 🔥 IMPORTANT FIX
+        if (!token) {
+          // dispatch(resetApplicationState());
+          return;
+        }
 
         const res = await api.get("/scholar/user/profile");
 

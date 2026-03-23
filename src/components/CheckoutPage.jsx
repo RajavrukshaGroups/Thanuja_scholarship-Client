@@ -30,6 +30,8 @@ const CheckOutPage = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  const [isPaymentDone, setIsPaymentDone] = useState(false);
+
   useEffect(() => {
     const loadMemberData = async () => {
       try {
@@ -187,15 +189,23 @@ const CheckOutPage = () => {
         order_id: order.id,
         name: "Edufin Scholarships",
         description: selectedPlan.planTitle,
+        prefill: {
+          name: form.fullName,
+          email: form.email,
+          contact: form.phone,
+        },
 
         handler: async function (response) {
+          setIsPaymentDone(true);
           await api.post("/scholar/payment/verify-payment", {
             ...response,
           });
 
           dispatch(resetApplicationState());
 
-          navigate("/payment-success");
+          setTimeout(() => {
+            navigate("/payment-success");
+          }, 1200);
         },
       });
 
@@ -623,6 +633,7 @@ const CheckOutPage = () => {
           {/* PREVIOUS BUTTON */}
           <motion.button
             onClick={() => navigate("/search")}
+            disabled={isProcessing || isPaymentDone}
             whileHover={{ x: -4 }}
             whileTap={{ scale: 0.95 }}
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl border border-gray-300 text-gray-700 font-medium bg-white hover:bg-gray-50 hover:border-gray-400 transition-all shadow-sm"
@@ -636,7 +647,7 @@ const CheckOutPage = () => {
             onClick={handlePayment}
             whileHover={isFormValid && !isProcessing ? { scale: 1.02 } : {}}
             whileTap={isFormValid && !isProcessing ? { scale: 0.98 } : {}}
-            disabled={!isFormValid || isProcessing}
+            disabled={!isFormValid || isProcessing || isPaymentDone}
             className={`flex items-center gap-2 px-8 py-3 rounded-xl font-semibold transition-all shadow-lg ${
               isFormValid && !isProcessing
                 ? "bg-gradient-to-r from-blue-600 to-amber-500 text-white hover:shadow-xl hover:shadow-blue-500/25"
@@ -648,6 +659,20 @@ const CheckOutPage = () => {
           </motion.button>
         </div>
       </motion.div>
+      {(isProcessing || isPaymentDone) && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[9999] flex items-center justify-center">
+          <div className="bg-white px-6 py-4 rounded-xl shadow-xl text-center">
+            <p className="text-lg font-semibold text-gray-800">
+              {isPaymentDone
+                ? "Finalizing your payment..."
+                : "Processing payment..."}
+            </p>
+            <p className="text-sm text-gray-500 mt-1">
+              Please do not close or go back
+            </p>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

@@ -50,8 +50,10 @@ export const Navbar = () => {
 
   const navItems = [
     { name: "Home", path: "/" },
+    { name: "About Us", path: "/about-us" },
     { name: "Scholarships", path: "/search" },
-    { name: "Scholarship Details", path: "/#premium" },
+    { name: "Services", path: "/services" },
+    { name: "Success Stories", path: "/success-stories" },
   ];
 
   const enquiry = useSelector((state) => state.application.enquiryDetails);
@@ -158,7 +160,7 @@ export const Navbar = () => {
                 onClick={() => navigate("/login")}
                 className="bg-edufin-deep text-white px-6 py-2.5 rounded-full font-semibold hover:bg-edufin-royal transition shadow-lg"
               >
-                Get Started
+                login
               </button>
             )}
           </div>

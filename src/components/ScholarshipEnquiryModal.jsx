@@ -31,12 +31,14 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
     try {
       const payload = { ...form };
 
+      // ✅ Clean payload
       if (payload.educationLevel === "Pre Metric") {
         delete payload.degreeLevel;
       }
 
       const res = await api.post("/scholar/enquiry", payload);
 
+      // ✅ ONLY Redux (no manual localStorage)
       dispatch(
         setEnquiryDetails({
           ...payload,
@@ -44,8 +46,10 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
         }),
       );
 
+      // ✅ Navigate
       navigate("/search");
 
+      // ✅ Close modal
       onClose();
     } catch (err) {
       console.error(err);

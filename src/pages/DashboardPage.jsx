@@ -31,8 +31,12 @@ import { FaUniversity, FaGraduationCap, FaRegClock } from "react-icons/fa";
 import ScholarshipDetailsDrawer from "../components/ScholarshipDetailsDrawer";
 import UpgradePlanModal from "./upgradePlanModal";
 import UploadDocumentsModal from "../components/UploadDocumentsModal";
+import { useDispatch } from "react-redux";
+import { resetApplicationState } from "../../store/applicationSlice";
+import { persistor } from "../../store/store";
 
 export const DashboardPage = () => {
+  const dispatch = useDispatch();
   const [user, setUser] = useState(null);
   const [activities, setActivities] = useState([]);
   const [membershipPlans, setMembershipPlan] = useState([]);
@@ -131,11 +135,19 @@ export const DashboardPage = () => {
 
   // const app = getApplicationStatus(sch.scholarship?._id);
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    // Clear localStorage (auth)
     localStorage.removeItem("scholarToken");
     localStorage.removeItem("scholarUser");
+    localStorage.removeItem("enquiry");
 
-    navigate("/");
+    // Clear redux state
+    dispatch(resetApplicationState());
+    // 🔥 VERY IMPORTANT (clears persisted redux)
+    await persistor.purge();
+
+    // Navigate
+    navigate("/", { replace: true });
   };
 
   const formatDate = (dateString) => {
@@ -324,7 +336,7 @@ export const DashboardPage = () => {
                   <div className="flex items-center justify-center gap-1 mt-2">
                     <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
                     <p className="text-xs text-white/80 font-medium">
-                      User ID: {user?.userId?.slice(-8) || "STU001"}
+                      User ID: {user?.userId}
                     </p>
                   </div>
 
