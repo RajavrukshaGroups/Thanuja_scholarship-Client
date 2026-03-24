@@ -470,11 +470,11 @@ export const DashboardPage = () => {
                       >
                         {stat.icon}
                       </div>
-                      <span
+                      {/* <span
                         className={`text-xs font-medium ${stat.bgLight} px-2 py-1 rounded-full text-gray-600`}
                       >
                         This month
-                      </span>
+                      </span> */}
                     </div>
                     <div>
                       <div className="text-2xl font-bold text-gray-900 mb-1">

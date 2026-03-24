@@ -147,7 +147,9 @@ const ScholarshipDetailsDrawer = ({
                 <div className="text-xs p-3 rounded-lg border">
                   Status:{" "}
                   <span className="font-semibold capitalize">
-                    {applicationStatus.status}
+                    {applicationStatus.status === "under_review"
+                      ? "Under Review"
+                      : applicationStatus.status}
                   </span>
                 </div>
               )}
