@@ -8,6 +8,7 @@ import { useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
 import { HomePage } from "./pages/HomePage";
+import { AboutPage} from "./pages/AboutPage"
 import { SearchPage } from "./pages/SearchPage";
 import { DetailsPage } from "./pages/DetailsPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -20,6 +21,12 @@ import ProtectedRoute from "./components/protectedRoute";
 // import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "sonner";
 import PaymentSuccess from "./components/PaymentSuccess";
+import SuccessStories from './pages/SuccessStories'
+
+import TermsConditions from './pages/TermsConditions'
+import PrivacyPolicy from './pages/PrivacyPolicy'
+import ServicesPage from "./pages/ServicesPage";
+
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
 
@@ -40,7 +47,7 @@ const ScrollToTop = () => {
 const WhatsAppButton = () => {
   return (
     <motion.a
-      href="https://wa.me/919876543210?text=Hi%20Edufin%20Team,%20I%20want%20help%20finding%20scholarships%20for%20my%20education."
+      href="https://wa.me/918618308471?text=Hi%20Edufin%20Team,%20I%20want%20help%20finding%20scholarships%20for%20my%20education."
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-2xl animate-pulse-gold cursor-pointer"
@@ -72,9 +79,14 @@ export default function App() {
         <main className="grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
+            <Route path='/about-us' element={<AboutPage/>}/>
             <Route path="/search" element={<SearchPage />} />
             <Route path="/scholarship/:id" element={<DetailsPage />} />
+            <Route path="/services" element={<ServicesPage/>}/>
             <Route path="/login" element={<LoginPage />} />
+            <Route path='/success-stories' element={<SuccessStories/>}/>
+            <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+            <Route path="/terms" element={<TermsConditions />} />
             <Route
               path="/dashboard"
               element={
@@ -90,7 +102,7 @@ export default function App() {
         </main>
 
         <Footer />
-        {/* <WhatsAppButton /> */}
+        <WhatsAppButton />
       </div>
     </Router>
   );

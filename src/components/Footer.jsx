@@ -8,13 +8,13 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <Link to="/" className="flex justify-center  flex-col items-center  ml-12 ">
+              <Link to="/" className="flex justify-center  flex-col items-center  ">
             <img
               src="/assets/edufin-logo.png"
               alt="Edufin Logo"
               className="h-14 w-auto "
             />
-              <br />
+              {/* <br />
             <div className="flex flex-col leading-none text-center -mt-6">
               <span
                 className="text-edufin-deep  text-xl tracking-tight"
@@ -32,7 +32,7 @@ export const Footer = () => {
               >
                 Scholarships
               </span>
-            </div>
+            </div> */}
           </Link>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed">
@@ -53,10 +53,10 @@ export const Footer = () => {
           <div>
             <h4 className="font-bold text-edufin-deep mb-6">Support</h4>
             <ul className="space-y-4 text-sm text-slate-500">
-              <li><a href="#" className="hover:text-edufin-royal transition-colors">Help Center</a></li>
-              <li><a href="#" className="hover:text-edufin-royal transition-colors">Contact Us</a></li>
-              <li><a href="#" className="hover:text-edufin-royal transition-colors">Privacy Policy</a></li>
-              <li><a href="#" className="hover:text-edufin-royal transition-colors">Terms of Service</a></li>
+              {/* <li><a href="#" className="hover:text-edufin-royal transition-colors">Help Center</a></li> */}
+              <li><a href="/login" className="hover:text-edufin-royal transition-colors">Contact Us</a></li>
+              <li><a href="/privacy-policy" className="hover:text-edufin-royal transition-colors">Privacy Policy</a></li>
+              <li><a href="/terms" className="hover:text-edufin-royal transition-colors">Terms of Service</a></li>
             </ul>
           </div>
 
@@ -65,15 +65,15 @@ export const Footer = () => {
             <ul className="space-y-4 text-sm text-slate-500">
               <li className="flex items-center gap-2">
                 <Globe size={16} />
-                <span>www.edufin.in</span>
+                <span>www.edufinscholarships.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <Headphones size={16} />
-                <span>support@edufin.in</span>
+                <span>edufinscholarships@gmail.com</span>
               </li>
               <li className="flex items-center gap-2">
                 <MessageCircle size={16} />
-                <span>+91 98765 43210</span>
+                <span>+91 8618308471</span>
               </li>
             </ul>
           </div>

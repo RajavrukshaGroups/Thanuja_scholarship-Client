@@ -76,22 +76,25 @@ export const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-          isScrolled
-            ? "bg-white/90 backdrop-blur-md py-3 shadow-sm"
-            : "bg-transparent py-5"
-        }`}
+        className={`fixed top-0  left-0 right-0 z-50 transition-all duration-300  bg-white/90 backdrop-blur-md py-3 
+       
+        `}
+         //    ${
+        //   isScrolled
+        //     ? "bg-white/90 backdrop-blur-md py-3 shadow-sm"
+        //     : "bg-transparent py-5"
+        // }
       >
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
           {/* LOGO */}
-          <Link to="/" className="flex flex-col items-center ml-12">
+          <Link to="/" className="flex flex-col items-center ">
             <img
               src="/assets/edufin-logo.png"
               alt="Edufin Logo"
-              className="h-14 w-auto"
+              className="h-20 w-auto"
             />
 
-            <div className="flex flex-col leading-none text-center">
+            {/* <div className="flex flex-col leading-none text-center">
               <span
                 className="text-edufin-deep text-xl tracking-tight"
                 style={{ fontFamily: "'Playfair Display', serif" }}
@@ -108,7 +111,7 @@ export const Navbar = () => {
               >
                 Scholarships
               </span>
-            </div>
+            </div> */}
           </Link>
 
           {/* DESKTOP NAV */}
