@@ -78,7 +78,10 @@ const CheckOutPage = () => {
     let updatedForm = { ...form, [key]: value };
 
     // Clear degreeLevel if switching to Pre Metric
-    if (key === "educationLevel" && value === "Pre Metric") {
+    // if (key === "educationLevel" && value === "Pre Metric") {
+    //   updatedForm.degreeLevel = "";
+    // }
+    if (key === "educationLevel" && value === "Pre Matric") {
       updatedForm.degreeLevel = "";
     }
 
@@ -92,7 +95,8 @@ const CheckOutPage = () => {
     form.fullName &&
     form.email &&
     form.educationLevel &&
-    (form.educationLevel !== "Post Metric" || form.degreeLevel);
+    // (form.educationLevel !== "Post Metric" || form.degreeLevel);
+    (form.educationLevel !== "Post Matric" || form.degreeLevel);
 
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat("en-IN", {
@@ -374,8 +378,10 @@ const CheckOutPage = () => {
                       <option value="" disabled>
                         Select education level
                       </option>
-                      <option value="Pre Metric">Pre Metric</option>
-                      <option value="Post Metric">Post Metric</option>
+                      {/* <option value="Pre Metric">Pre Metric</option> */}
+                      <option value="Pre Matric">Pre Matric</option>
+                      {/* <option value="Post Metric">Post Metric</option> */}
+                      <option value="Post Matric">Post Matric</option>
                     </select>
                     <div className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
                       <FiChevronRight
@@ -387,7 +393,8 @@ const CheckOutPage = () => {
                 </div>
 
                 <AnimatePresence>
-                  {form.educationLevel === "Post Metric" && (
+                  {/* {form.educationLevel === "Post Metric" && ( */}
+                  {form.educationLevel === "Post Matric" && (
                     <motion.div
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}

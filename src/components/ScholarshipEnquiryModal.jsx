@@ -32,7 +32,10 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
       const payload = { ...form };
 
       // ✅ Clean payload
-      if (payload.educationLevel === "Pre Metric") {
+      // if (payload.educationLevel === "Pre Metric") {
+      //   delete payload.degreeLevel;
+      // }
+      if (payload.educationLevel === "Pre Matric") {
         delete payload.degreeLevel;
       }
 
@@ -59,7 +62,8 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
   const isFormValid = () => {
     if (!form.fullName || !form.email || !form.phone || !form.educationLevel)
       return false;
-    if (form.educationLevel === "Post Metric" && !form.degreeLevel)
+    // if (form.educationLevel === "Post Metric" && !form.degreeLevel)
+    if (form.educationLevel === "Post Matric" && !form.degreeLevel)
       return false;
     return true;
   };
@@ -187,11 +191,14 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
                     <option value="" className="text-[#64748b]">
                       Select education level
                     </option>
-                    <option value="Pre Metric" className="text-[#0a1929]">
-                      Pre Metric
+                    <option value="Pre Matric" className="text-[#0a1929]">
+                      Pre Matric
                     </option>
-                    <option value="Post Metric" className="text-[#0a1929]">
+                    {/* <option value="Post Metric" className="text-[#0a1929]">
                       Post Metric
+                    </option> */}
+                    <option value="Post Matric" className="text-[#0a1929]">
+                      Post Matric
                     </option>
                   </select>
                   <div className="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
@@ -214,7 +221,8 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
 
               {/* DEGREE - CONDITIONAL with animation */}
               <AnimatePresence>
-                {form.educationLevel === "Post Metric" && (
+                {/* {form.educationLevel === "Post Metric" && ( */}
+                {form.educationLevel === "Post Matric" && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: "auto" }}
