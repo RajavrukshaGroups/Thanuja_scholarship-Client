@@ -199,17 +199,32 @@ const CheckOutPage = () => {
           contact: form.phone,
         },
 
-        handler: async function (response) {
+        // handler: async function (response) {
+        //   setIsPaymentDone(true);
+        //   await api.post("/scholar/payment/verify-payment", {
+        //     ...response,
+        //   });
+
+        //   dispatch(resetApplicationState());
+
+        //   setTimeout(() => {
+        //     navigate("/payment-success");
+        //   }, 1200);
+        // },
+        handler: function (response) {
           setIsPaymentDone(true);
-          await api.post("/scholar/payment/verify-payment", {
-            ...response,
-          });
+
+          api
+            .post("/scholar/payment/verify-payment", {
+              ...response,
+            })
+            .catch((err) => {
+              console.error("Verify failed:", err);
+            });
 
           dispatch(resetApplicationState());
 
-          setTimeout(() => {
-            navigate("/payment-success");
-          }, 1200);
+          navigate("/payment-success");
         },
       });
 
