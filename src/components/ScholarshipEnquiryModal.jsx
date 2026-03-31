@@ -20,6 +20,14 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
     degreeLevel: "",
   });
 
+  const isValidEmail = (email) => {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  };
+
+  const isValidPhone = (phone) => {
+    return /^[6-9]\d{9}$/.test(phone); // Indian 10-digit
+  };
+
   const handleChange = (key, value) => {
     setForm((prev) => ({
       ...prev,
@@ -62,6 +70,9 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
   const isFormValid = () => {
     if (!form.fullName || !form.email || !form.phone || !form.educationLevel)
       return false;
+    if (!isValidEmail(form.email)) return false;
+    if (!isValidPhone(form.phone)) return false;
+
     // if (form.educationLevel === "Post Metric" && !form.degreeLevel)
     if (form.educationLevel === "Post Matric" && !form.degreeLevel)
       return false;
@@ -163,11 +174,21 @@ const ScholarshipEnquiryModal = ({ isOpen, onClose }) => {
                   <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                     <FiPhone className="text-[#64748b] group-focus-within:text-blue-500 transition-colors" />
                   </div>
-                  <input
+                  {/* <input
                     placeholder="+1 234 567 8900"
                     className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#e2e8f0] rounded-2xl text-[#0a1929] placeholder-[#94a3b8] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
                     value={form.phone}
                     onChange={(e) => handleChange("phone", e.target.value)}
+                  /> */}
+                  <input
+                    placeholder="Enter 10-digit mobile number"
+                    maxLength={10}
+                    className="w-full pl-11 pr-4 py-3.5 bg-white border border-[#e2e8f0] rounded-2xl text-[#0a1929] placeholder-[#94a3b8] focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all"
+                    value={form.phone}
+                    onChange={(e) => {
+                      const value = e.target.value.replace(/\D/g, ""); // only numbers
+                      handleChange("phone", value);
+                    }}
                   />
                 </div>
               </div>
