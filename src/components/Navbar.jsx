@@ -53,7 +53,7 @@ export const Navbar = () => {
     { name: "About Us", path: "/about-us" },
     { name: "Scholarships", path: "/search" },
     { name: "Services", path: "/services" },
-    { name: "Success Stories", path: "/success-stories" },
+    { name: "Contact Us", path: "/contact" },
   ];
 
   const enquiry = useSelector((state) => state.application.enquiryDetails);
@@ -79,7 +79,7 @@ export const Navbar = () => {
         className={`fixed top-0  left-0 right-0 z-50 transition-all duration-300  bg-white/90 backdrop-blur-md py-3 
        
         `}
-         //    ${
+        //    ${
         //   isScrolled
         //     ? "bg-white/90 backdrop-blur-md py-3 shadow-sm"
         //     : "bg-transparent py-5"

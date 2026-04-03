@@ -7,8 +7,8 @@ import {
 import { useEffect } from "react";
 import { Navbar } from "./components/Navbar";
 import { Footer } from "./components/Footer";
-import { HomePage } from "./pages/HomePage";
-import { AboutPage} from "./pages/AboutPage"
+import Membership, { HomePage } from "./pages/HomePage";
+import { AboutPage } from "./pages/AboutPage";
 import { SearchPage } from "./pages/SearchPage";
 import { DetailsPage } from "./pages/DetailsPage";
 import { DashboardPage } from "./pages/DashboardPage";
@@ -21,11 +21,12 @@ import ProtectedRoute from "./components/protectedRoute";
 // import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "sonner";
 import PaymentSuccess from "./components/PaymentSuccess";
-import SuccessStories from './pages/SuccessStories'
+import SuccessStories from "./pages/SuccessStories";
 
-import TermsConditions from './pages/TermsConditions'
-import PrivacyPolicy from './pages/PrivacyPolicy'
+import TermsConditions from "./pages/TermsConditions";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import ServicesPage from "./pages/ServicesPage";
+import ContactUs from "./components/ContactUs";
 
 const ScrollToTop = () => {
   const { pathname, hash } = useLocation();
@@ -79,13 +80,13 @@ export default function App() {
         <main className="grow">
           <Routes>
             <Route path="/" element={<HomePage />} />
-            <Route path='/about-us' element={<AboutPage/>}/>
+            <Route path="/about-us" element={<AboutPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/scholarship/:id" element={<DetailsPage />} />
-            <Route path="/services" element={<ServicesPage/>}/>
+            <Route path="/services" element={<ServicesPage />} />
             <Route path="/login" element={<LoginPage />} />
-            <Route path='/success-stories' element={<SuccessStories/>}/>
-            <Route path="/privacy-policy" element={<PrivacyPolicy/>}/>
+            <Route path="/success-stories" element={<SuccessStories />} />
+            <Route path="/privacy-policy" element={<PrivacyPolicy />} />
             <Route path="/terms" element={<TermsConditions />} />
             <Route
               path="/dashboard"
@@ -98,6 +99,8 @@ export default function App() {
             {/* <Route path="/dashboard" element={<DashboardPage />} /> */}
             <Route path="/checkout" element={<CheckOutPage />} />
             <Route path="/payment-success" element={<PaymentSuccess />} />
+            <Route path="/contact" element={<ContactUs />} />
+            <Route path="/membership" element={<Membership/>}/>
           </Routes>
         </main>
 

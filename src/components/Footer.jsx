@@ -1,5 +1,6 @@
-import { Globe, Headphones, MessageCircle } from 'lucide-react';
-import { Link } from 'react-router-dom';
+
+import { Globe, Headphones, MessageCircle } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Footer = () => {
   return (
@@ -8,13 +9,16 @@ export const Footer = () => {
         <div className="grid md:grid-cols-4 gap-12 mb-16">
           <div className="col-span-1 md:col-span-1">
             <div className="flex items-center gap-2 mb-6">
-              <Link to="/" className="flex justify-center  flex-col items-center  ">
-            <img
-              src="/assets/edufin-logo.png"
-              alt="Edufin Logo"
-              className="h-14 w-auto "
-            />
-              {/* <br />
+              <Link
+                to="/"
+                className="flex justify-center  flex-col items-center  "
+              >
+                <img
+                  src="/assets/edufin-logo.png"
+                  alt="Edufin Logo"
+                  className="h-14 w-auto "
+                />
+                {/* <br />
             <div className="flex flex-col leading-none text-center -mt-6">
               <span
                 className="text-edufin-deep  text-xl tracking-tight"
@@ -33,20 +37,42 @@ export const Footer = () => {
                 Scholarships
               </span>
             </div> */}
-          </Link>
+              </Link>
             </div>
             <p className="text-slate-500 text-sm leading-relaxed">
-              Empowering Indian students to achieve their academic dreams through verified scholarship discovery and expert guidance.
+              Empowering Indian students to achieve their academic dreams
+              through verified scholarship discovery and expert guidance.
             </p>
           </div>
 
           <div>
             <h4 className="font-bold text-edufin-deep mb-6">Quick Links</h4>
             <ul className="space-y-4 text-sm text-slate-500">
-              <li><Link to="/search" className="hover:text-edufin-royal transition-colors">Search Scholarships</Link></li>
-              <li><Link to="/#premium" className="hover:text-edufin-royal transition-colors">Premium Membership</Link></li>
-              <li><Link to="/#advisors" className="hover:text-edufin-royal transition-colors">Scholarship Advisors</Link></li>
-              <li><Link to="/#success-stories" className="hover:text-edufin-royal transition-colors">Success Stories</Link></li>
+              {/* <li>
+                <Link
+                  to="/search"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Search Scholarships
+                </Link>
+              </li> */}
+              <li>
+                <Link
+                  to="/membership"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Premium Membership
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/contact"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Scholarship Advisors
+                </Link>
+              </li>
+              {/* <li><Link to="/success-stories" className="hover:text-edufin-royal transition-colors">Success Stories</Link></li> */}
             </ul>
           </div>
 
@@ -54,9 +80,30 @@ export const Footer = () => {
             <h4 className="font-bold text-edufin-deep mb-6">Support</h4>
             <ul className="space-y-4 text-sm text-slate-500">
               {/* <li><a href="#" className="hover:text-edufin-royal transition-colors">Help Center</a></li> */}
-              <li><a href="/login" className="hover:text-edufin-royal transition-colors">Contact Us</a></li>
-              <li><a href="/privacy-policy" className="hover:text-edufin-royal transition-colors">Privacy Policy</a></li>
-              <li><a href="/terms" className="hover:text-edufin-royal transition-colors">Terms of Service</a></li>
+              <li>
+                <a
+                  href="/contact"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Contact Us
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/privacy-policy"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Privacy Policy
+                </a>
+              </li>
+              <li>
+                <a
+                  href="/terms"
+                  className="hover:text-edufin-royal transition-colors"
+                >
+                  Terms of Service
+                </a>
+              </li>
             </ul>
           </div>
 
@@ -79,7 +126,7 @@ export const Footer = () => {
           </div>
         </div>
 
-        <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
+        {/* <div className="pt-8 border-t border-slate-200 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-slate-400 text-xs">© 2026 Edufin Scholarships. All rights reserved.</p>
           <div className="flex gap-6">
             <div className="w-8 h-8 rounded-full bg-slate-200 flex items-center justify-center hover:bg-edufin-royal hover:text-white transition-all cursor-pointer">
@@ -92,7 +139,7 @@ export const Footer = () => {
               <span className="text-xs font-bold">Ig</span>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </footer>
   );

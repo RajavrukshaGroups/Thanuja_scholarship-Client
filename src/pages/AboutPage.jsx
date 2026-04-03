@@ -50,15 +50,15 @@ export const AboutPage = () => {
         <p className="text-lg md:text-xl text-blue-100 mb-10 max-w-lg leading-relaxed font-[#F5F7FA]">
           We bridge the gap between ambitious students and world-class education through strategic intelligence and verified opportunities.
         </p>
-        <div className="flex flex-wrap gap-4">
+        {/* <div className="flex flex-wrap gap-4">
           <button  onClick={() => navigate("/scholarship")} className="bg-[#D4AF37] text-[#0B1E6D] px-8 py-4 rounded-sm font-semibold hover:bg-white transition-all duration-300 flex items-center gap-2 group">
             Explore Opportunities
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
           </button>
-          {/* <button className="border border-white/30 text-white px-8 py-4 rounded-sm font-semibold hover:bg-white/10 transition-all duration-300">
+          <button className="border border-white/30 text-white px-8 py-4 rounded-sm font-semibold hover:bg-white/10 transition-all duration-300">
             Learn More
-          </button> */}
-        </div>
+          </button>
+        </div> */}
       </motion.div>
       
       <motion.div 
@@ -293,10 +293,10 @@ export const AboutPage = () => {
         <p className="text-lg text-gray-600 mb-10 leading-relaxed">
           Join thousands of students who have transformed their academic futures through Edufin Scholarships. Trust our platform to be your strategic partner in navigating the complex landscape of global education funding.
         </p>
-        <button onClick={()=>navigate("/login")} className="bg-[#0B1E6D] text-white px-10 py-4 rounded-sm font-bold text-lg hover:bg-[#1F6FB2] transition-all duration-300 shadow-xl shadow-[#0B1E6D]/20 flex items-center gap-3 mx-auto group">
+        {/* <button onClick={()=>navigate("/login")} className="bg-[#0B1E6D] text-white px-10 py-4 rounded-sm font-bold text-lg hover:bg-[#1F6FB2] transition-all duration-300 shadow-xl shadow-[#0B1E6D]/20 flex items-center gap-3 mx-auto group">
           Get Started Today
           <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-        </button>
+        </button> */}
       </motion.div>
     </div>
   </section>

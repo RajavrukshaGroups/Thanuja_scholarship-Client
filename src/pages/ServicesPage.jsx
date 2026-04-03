@@ -1,6 +1,13 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { GraduationCap, Users, FileText, Bell, Crown, ShieldCheck } from "lucide-react";
+import {
+  GraduationCap,
+  Users,
+  FileText,
+  Bell,
+  Crown,
+  ShieldCheck,
+} from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 // 🎨 Brand Colors (from your logo)
@@ -31,7 +38,7 @@ const services = [
       "Profile Evaluation",
       "Scholarship Shortlisting",
       "Application Strategy",
-    //   "Country & Course Guidance",
+      //   "Country & Course Guidance",
     ],
   },
   {
@@ -85,7 +92,7 @@ const services = [
 ];
 
 export default function ServicesPage() {
-    const navigate = useNavigate()
+  const navigate = useNavigate();
   return (
     <div className="bg-white text-gray-800 overflow-hidden">
       {/* Hero Section */}
@@ -134,9 +141,7 @@ export default function ServicesPage() {
                 <h2 className="text-xl font-semibold mb-3 text-[#0B3C8C]">
                   {service.title}
                 </h2>
-                <p className="text-gray-600 mb-5">
-                  {service.description}
-                </p>
+                <p className="text-gray-600 mb-5">{service.description}</p>
 
                 <ul className="space-y-2">
                   {service.points.map((point, i) => (
@@ -166,10 +171,13 @@ export default function ServicesPage() {
           their academic dreams without financial barriers.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button onClick={()=>navigate("/scholarships")} className="bg-[#0B3C8C] text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:scale-105 transition">
+          {/* <button onClick={()=>navigate("/scholarships")} className="bg-[#0B3C8C] text-white px-8 py-3 rounded-xl font-semibold shadow-md hover:scale-105 transition">
             Explore Scholarships
-          </button>
-          <button onClick={()=>navigate("/login")} className="border border-[#0B3C8C] text-[#0B3C8C] px-8 py-3 rounded-xl font-semibold hover:bg-[#0B3C8C] hover:text-white transition">
+          </button> */}
+          <button
+            onClick={() => navigate("/contact")}
+            className="border border-[#0B3C8C] text-[#0B3C8C] px-8 py-3 rounded-xl font-semibold hover:bg-[#0B3C8C] hover:text-white transition"
+          >
             Book Consultation
           </button>
         </div>

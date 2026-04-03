@@ -81,6 +81,34 @@ export const DashboardPage = () => {
     }
   };
 
+  // useEffect(() => {
+  //   const init = async () => {
+  //     try {
+  //       const res = await api.get("/scholar/user/profile");
+
+  //       setUser(res.data?.user);
+  //       setActivities(res.data?.selectedScholarships || []);
+  //       setMembershipPlan(res.data?.membershipPlan || []);
+  //       setRequiredDocuments(res.data.requiredDocuments || []);
+
+  //       const upgradeRes = await api.get(
+  //         "/scholar/user/scholar/membership/upgrade-options",
+  //       );
+
+  //       if (upgradeRes.data.upgradePlans.length > 0) {
+  //         setHasUpgradePlans(true);
+  //       }
+
+  //       // ✅ IMPORTANT
+  //       await fetchApplications();
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   };
+
+  //   init();
+  // }, []);
+
   useEffect(() => {
     const init = async () => {
       try {
@@ -99,9 +127,14 @@ export const DashboardPage = () => {
           setHasUpgradePlans(true);
         }
 
-        // ✅ IMPORTANT
         await fetchApplications();
       } catch (error) {
+        // 🔥 HANDLE INACTIVE USER HERE
+        if (error?.response?.data?.code === "ACCOUNT_INACTIVE") {
+          setUser({ isInactive: true });
+          return;
+        }
+
         console.log(error);
       }
     };
@@ -214,6 +247,39 @@ export const DashboardPage = () => {
       gradient: "from-green-500 to-emerald-500",
     },
   ];
+
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-gray-600 animate-pulse">Loading dashboard...</div>
+      </div>
+    );
+  }
+
+  // 🔥 PLACE THIS BEFORE return
+  if (user?.isInactive) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-50">
+        <div className="bg-white shadow-xl rounded-2xl p-8 text-center max-w-md border">
+          <h2 className="text-xl font-bold text-red-600 mb-3">
+            Account Inactive
+          </h2>
+
+          <p className="text-gray-600 mb-5">
+            Your account is currently inactive. Please contact support or renew
+            your plan to continue.
+          </p>
+
+          <button
+            onClick={() => navigate("/")}
+            className="bg-gradient-to-r from-blue-600 to-amber-500 text-white px-5 py-2 rounded-lg"
+          >
+            Contact Support
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white">
