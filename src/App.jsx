@@ -48,7 +48,7 @@ const ScrollToTop = () => {
 const WhatsAppButton = () => {
   return (
     <motion.a
-      href="https://wa.me/918618308471?text=Hi%20Edufin%20Team,%20I%20want%20help%20finding%20scholarships%20for%20my%20education."
+      href="https://wa.me/916366836187?text=Hi%20Edufin%20Team,%20I%20want%20help%20finding%20scholarships%20for%20my%20education."
       target="_blank"
       rel="noopener noreferrer"
       className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-[#25D366] rounded-full flex items-center justify-center text-white shadow-2xl animate-pulse-gold cursor-pointer"

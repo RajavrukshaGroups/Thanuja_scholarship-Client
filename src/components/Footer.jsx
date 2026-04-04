@@ -120,7 +120,7 @@ export const Footer = () => {
               </li>
               <li className="flex items-center gap-2">
                 <MessageCircle size={16} />
-                <span>+91 8618308471</span>
+                <span>+91 6366836187</span>
               </li>
             </ul>
           </div>
